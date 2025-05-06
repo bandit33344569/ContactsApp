@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Contacts app</string>
+    <string name="PermissionDeniedScreenCause">Необходимо разрешение на чтение контактов и звонки</string>
+    <string name="PermissionDeniedScreenOpenSettings">Открыть настройки</string>
+    <string name="ErrorScreenRepeatButton">Повторить</string>
+    <string name="ErrorScreenUnknownErrorMessage">Неизвестная ошибка</string>
+    <string name="ContactListScreenAlertDialogTitle">Разрешение не предоставлено</string>
+    <string name="ContactListScreenAlertDialogMessage">Пожалуйста, предоставьте разрешение на звонки в настройках.</string>
+    <string name="ContactListScreenNoContact">Нет контактов</string>
+</resources>
