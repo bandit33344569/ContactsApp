@@ -1,7 +1,10 @@
 package com.bro.contactsapp.domain.model
 
 data class Contact(
-    val name: String,
-    val surname: String,
+    val firstName: String,
+    val lastName: String,
     val phoneNumber: String
-)
+){
+    val fullName: String
+        get() = "$firstName $lastName".trim()
+}

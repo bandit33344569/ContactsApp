@@ -8,6 +8,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -34,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bro.contactsapp.R
 import com.bro.contactsapp.domain.model.Contact
+import com.bro.contactsapp.domain.util.GroupedContact
 
 @Composable
 fun ContactScreen(viewModel: ContactViewModel) {
@@ -77,7 +79,7 @@ fun ContactScreen(viewModel: ContactViewModel) {
         state.isLoading -> CircularProgressIndicator()
         else -> {
             ContactListScreen(
-                contacts = state.contacts,
+                groupedContacts = state.groupedContacts,
                 onContactClick = { phone ->
                     if (androidx.core.content.ContextCompat.checkSelfPermission(
                             context,
@@ -115,10 +117,10 @@ fun ErrorScreen(errorMessage: String, onRetry: () -> Unit) {
 
 @Composable
 fun ContactListScreen(
-    contacts: List<Contact>,
+    groupedContacts: List<GroupedContact>,
     onContactClick: (String) -> Unit
 ) {
-    if (contacts.isEmpty()) {
+    if (groupedContacts.isEmpty()) {
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
@@ -130,9 +132,23 @@ fun ContactListScreen(
             )
         }
     } else {
-        LazyColumn {
-            items(contacts) { contact ->
-                ContactItem(contact = contact, onContactClick = onContactClick)
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(16.dp)
+        ) {
+            groupedContacts.forEach { group ->
+                item {
+                    Text(
+                        text = group.letter.toString(),
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
+                }
+                items(group.contacts) { contact ->
+                    ContactItem(contact = contact, onContactClick = onContactClick)
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
             }
         }
     }
@@ -143,12 +159,20 @@ fun ContactItem(contact: Contact, onContactClick: (String) -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp)
+            .padding(horizontal = 8.dp, vertical = 4.dp)
             .clickable { onContactClick(contact.phoneNumber) }
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = contact.name, fontWeight = FontWeight.Bold)
-            Text(text = contact.phoneNumber)
+            Text(
+                text = contact.fullName,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = contact.phoneNumber,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+            )
         }
     }
 }

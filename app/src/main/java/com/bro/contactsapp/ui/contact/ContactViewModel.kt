@@ -2,11 +2,13 @@ package com.bro.contactsapp.ui.contact
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.bro.contactsapp.domain.model.Contact
 import com.bro.contactsapp.domain.usecase.GetContactsUseCase
+import com.bro.contactsapp.domain.util.GroupedContact
+import com.bro.contactsapp.domain.util.groupByFirstLetter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -22,10 +24,12 @@ class ContactViewModel @Inject constructor(
     fun loadContacts() {
         viewModelScope.launch {
             try {
-                getContactsUseCase().collect { contacts ->
+                getContactsUseCase().map { contacts ->
+                    contacts.groupByFirstLetter()
+                }.collect { groupedContacts ->
                     _uiState.update { state ->
                         state.copy(
-                            contacts = contacts,
+                            groupedContacts = groupedContacts,
                             isLoading = false,
                             error = null
                         )
@@ -43,7 +47,7 @@ class ContactViewModel @Inject constructor(
 }
 
 data class ContactUiState(
-    val contacts: List<Contact> = emptyList(),
+    val groupedContacts: List<GroupedContact> = emptyList(),
     val isLoading: Boolean = true,
     val permissionDenied: Boolean = false,
     val error: String? = null
